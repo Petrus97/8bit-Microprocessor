@@ -1,5 +1,7 @@
 # Microprocessor 8bit with VHDL
 
+![architecture](images/architecture.png)
+
 ## Submodules
 
 - Control Unit (CU)
@@ -64,3 +66,5 @@ Two bytes instruction
 | 1010 | 1000 | xxxxxxxx | LD_JUMPREG |
 | 1010 | 1001 | xxxxxxxx | LD_ADDR1 |
 | 1010 | 1010 | xxxxxxxx | LD_ADDR2 |
+
+![time_diagram](images/time_diagram.png)
