@@ -68,3 +68,24 @@ Two bytes instruction
 | 1010 | 1010 | xxxxxxxx | LD_ADDR2 |
 
 ![time_diagram](images/time_diagram.png)
+
+# Test Programs
+`A=B+C`
+How it would be "compiled"
+```asm
+; load the operands
+LD_ADDR1 $B; load the address of B in the ADDR1
+LD_ADDR2 $C; load the address of C in the ADDR2
+; move the data in in ACC and TEMP
+LD_ACC
+LD_TEMP
+; load the address of A in ADDR1
+LD_ADDR1 $A;
+ADD ;
+ST_ACC1 ; store in memory the value of the ACC register
+```
+
+`IF A>=0 THEN B=C`
+```asm
+LD_ADDR1 $A ; load the address of A in the ADDR1
+```
