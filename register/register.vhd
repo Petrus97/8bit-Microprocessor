@@ -55,13 +55,12 @@ begin
         data => data,
         addr_ld => addr_ld,
         addr_inc => addr_inc,
-        to_addr_buf => address
+        to_addr_buf => to_addr_buf
     );
-    -- address <= to_addr_buf;
-    -- addr_buffer: entity work.addr_buf port map(
-    --     clk => clk,
-    --     addr_oe => addr_oe,
-    --     from_addr => to_addr_buf,
-    --     address => address
-    -- );
+    addr_buffer: entity work.addr_buf port map(
+        clk => clk,
+        addr_oe => addr_oe,
+        from_addr => to_addr_buf,
+        address => address
+    );
 end architecture rtl;

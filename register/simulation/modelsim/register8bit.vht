@@ -84,11 +84,12 @@ BEGIN
 		-- addr_oe <= '0';
 		-- wait for 10 ns;
 		for i in 0 to 255 loop
-			addr_ld <= '0'; -- disable load address
+			addr_oe <= '0'; -- disable output
+			addr_ld <= '1'; -- enable load address
 			data <= std_logic_vector(to_unsigned(i, data'length));
 			wait for period;
-			addr_ld <= '1'; -- enable load address
-			--	data <= std_logic_vector(to_unsigned(i, data'length));
+			addr_ld <= '0'; -- disable load address
+			addr_oe <= '1'; -- enable output
 			wait for period;
 		end loop;
 WAIT;                                                        
@@ -96,7 +97,7 @@ END PROCESS always;
 
 clock: process
 begin
-	for i in 0 to 10 loop
+	for i in 0 to 512 loop
 		clk <= '1';
 		wait for half_period;
 		clk <= '0';
