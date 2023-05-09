@@ -1,0 +1,13 @@
+register/db
+register/incremental_db
+register/output_files
+register/*.txt
+register/*.bak
+register/*.xrf
+register/*.sft
+register/simulation/modelsim/*.do*
+msim_transcript
+# register/*.txt
+# register/*.bak
+# register/*.xrf
+# register/*.sft
