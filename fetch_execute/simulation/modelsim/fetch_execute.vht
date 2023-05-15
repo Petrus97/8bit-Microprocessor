@@ -18,52 +18,52 @@
 -- fill out necessary details.                                                
 -- ***************************************************************************
 -- Generated on "05/15/2023 13:39:41"
-                                                            
+
 -- Vhdl Test Bench template for design  :  fetch_execute
 -- 
 -- Simulation tool : ModelSim-Altera (VHDL)
 -- 
 
-LIBRARY ieee;                                               
-USE ieee.std_logic_1164.all;                                
+library ieee;
+use ieee.std_logic_1164.all;
 
-ENTITY fetch_execute_vhd_tst IS
-END fetch_execute_vhd_tst;
-ARCHITECTURE fetch_execute_arch OF fetch_execute_vhd_tst IS
--- constants  
+entity fetch_execute_vhd_tst is
+end fetch_execute_vhd_tst;
+architecture fetch_execute_arch of fetch_execute_vhd_tst is
+  -- constants  
 
-  constant PERIOD : time := 10 ns;                                               
--- signals                                                   
-SIGNAL clk : STD_LOGIC;
-SIGNAL phase : STD_LOGIC_VECTOR(3 DOWNTO 0);
-COMPONENT fetch_execute
-	PORT (
-	clk : IN STD_LOGIC;
-	phase : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
-	);
-END COMPONENT;
-BEGIN
-	i1 : fetch_execute
-	PORT MAP (
--- list connections between master ports and signals
-	clk => clk,
-	phase => phase
-	);
-init : PROCESS                                               
--- variable declarations                                     
-BEGIN                                                        
-        -- code that executes only once                      
-WAIT;                                                       
-END PROCESS init;                                           
-always : PROCESS                                              
--- optional sensitivity list                                  
--- (        )                                                 
--- variable declarations                                      
-BEGIN                                                         
-        -- code executes for every event on sensitivity list  
-WAIT;                                                        
-END PROCESS always;                                          
-END fetch_execute_arch;
+  constant PERIOD : time := 10 ns;
+  -- signals                                                   
+  signal clk : std_logic;
+  signal phase : std_logic_vector(3 downto 0);
+  component fetch_execute
+    port (
+      clk : in std_logic;
+      phase : out std_logic_vector(3 downto 0)
+    );
+  end component;
+begin
+  i1 : fetch_execute
+  port map(
+    -- list connections between master ports and signals
+    clk => clk,
+    phase => phase
+  );
+  init : process
+    -- variable declarations                                     
+  begin
+    -- code that executes only once                      
+    wait;
+  end process init;
+  always : process
+    -- optional sensitivity list                                  
+    -- (        )                                                 
+    -- variable declarations                                      
+  begin
+    -- code executes for every event on sensitivity list  
+    wait;
+  end process always;
+end fetch_execute_arch;
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -85,10 +85,10 @@ architecture sim of fetch_execute_vhd_tst is
 
 begin
   dut : fetch_execute
-    port map (
-      clk => clk_tb,
-      phase => phase_tb
-    );
+  port map(
+    clk => clk_tb,
+    phase => phase_tb
+  );
 
   clk_process : process
   begin

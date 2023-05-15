@@ -18,51 +18,49 @@
 -- fill out necessary details.                                                
 -- ***************************************************************************
 -- Generated on "05/07/2023 21:45:03"
-                                                            
+
 -- Vhdl Test Bench template for design  :  register8bit
 -- 
 -- Simulation tool : ModelSim-Altera (VHDL)
 -- 
 
-LIBRARY ieee;                                               
-USE ieee.std_logic_1164.all;                                
-USE ieee.numeric_std.all;
-
-
-ENTITY register8bit_vhd_tst IS
-END register8bit_vhd_tst;
-ARCHITECTURE register8bit_arch OF register8bit_vhd_tst IS
--- constants                                                 
-constant period : time := 10 ns;
-constant half_period : time := period / 2;
--- signals                                                   
-SIGNAL addr_inc : STD_LOGIC;
-SIGNAL addr_ld : STD_LOGIC;
-SIGNAL addr_oe : STD_LOGIC;
-SIGNAL address : STD_LOGIC_VECTOR(7 DOWNTO 0);
-SIGNAL clk : STD_LOGIC;
-SIGNAL data : STD_LOGIC_VECTOR(7 DOWNTO 0);
-COMPONENT register8bit
-	PORT (
-	addr_inc : IN STD_LOGIC;
-	addr_ld : IN STD_LOGIC;
-	addr_oe : IN STD_LOGIC;
-	address : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-	clk : IN STD_LOGIC;
-	data : IN STD_LOGIC_VECTOR(7 DOWNTO 0)
-	);
-END COMPONENT;
-BEGIN
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+entity register8bit_vhd_tst is
+end register8bit_vhd_tst;
+architecture register8bit_arch of register8bit_vhd_tst is
+	-- constants                                                 
+	constant period : time := 10 ns;
+	constant half_period : time := period / 2;
+	-- signals                                                   
+	signal addr_inc : std_logic;
+	signal addr_ld : std_logic;
+	signal addr_oe : std_logic;
+	signal address : std_logic_vector(7 downto 0);
+	signal clk : std_logic;
+	signal data : std_logic_vector(7 downto 0);
+	component register8bit
+		port (
+			addr_inc : in std_logic;
+			addr_ld : in std_logic;
+			addr_oe : in std_logic;
+			address : out std_logic_vector(7 downto 0);
+			clk : in std_logic;
+			data : in std_logic_vector(7 downto 0)
+		);
+	end component;
+begin
 	i1 : register8bit
-	PORT MAP (
--- list connections between master ports and signals
-	addr_inc => addr_inc,
-	addr_ld => addr_ld,
-	addr_oe => addr_oe,
-	address => address,
-	clk => clk,
-	data => data
-	);                                         
+	port map(
+		-- list connections between master ports and signals
+		addr_inc => addr_inc,
+		addr_ld => addr_ld,
+		addr_oe => addr_oe,
+		address => address,
+		clk => clk,
+		data => data
+	);
 
 	-- address <= (OTHERS => '0');
 	-- data <= (OTHERS => '0');
@@ -70,11 +68,11 @@ BEGIN
 	-- addr_ld <= '0';
 	-- addr_oe <= '0';
 
-always : PROCESS                                              
--- optional sensitivity list                                  
--- (        )                                                 
--- variable declarations                                      
-BEGIN                                                         
+	always : process
+		-- optional sensitivity list                                  
+		-- (        )                                                 
+		-- variable declarations                                      
+	begin
 		addr_ld <= '0'; -- enable load address
 		addr_inc <= '0'; -- disable increment address
 		addr_oe <= '0'; -- disable output
@@ -92,18 +90,18 @@ BEGIN
 			addr_oe <= '1'; -- enable output
 			wait for period;
 		end loop;
-WAIT;                                                        
-END PROCESS always;                                          
+		wait;
+	end process always;
 
-clock: process
-begin
-	for i in 0 to 512 loop
-		clk <= '1';
-		wait for half_period;
-		clk <= '0';
-		wait for half_period;
-	end loop;
-	wait;
-end process clock;
+	clock : process
+	begin
+		for i in 0 to 512 loop
+			clk <= '1';
+			wait for half_period;
+			clk <= '0';
+			wait for half_period;
+		end loop;
+		wait;
+	end process clock;
 
-END register8bit_arch;
+end register8bit_arch;

@@ -115,7 +115,7 @@ LD_ADDR1 $A ; load the address of A in the ADDR1
 | ADDR2_LD  | Address 2 load          | CU -> Control bus -> Register2(ADDR2)  |
 
 # Registers
-![register](images/register.png)
+![register](images/register.png)<br>
 
 Since the LD_ADDR* instructions are 2 bytes instructions, this is how they should work.
 1. Instruction LD_ADDR is fetched and decoded. ADD_LD signal is sent by the CU

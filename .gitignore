@@ -1,13 +1,14 @@
-register/db
-register/incremental_db
-register/output_files
-register/*.txt
-register/*.bak
-register/*.xrf
-register/*.sft
-register/simulation/modelsim/*.do*
-msim_transcript
-# register/*.txt
-# register/*.bak
-# register/*.xrf
-# register/*.sft
+# exclude all
+*
+# include folders
+!*/
+# include gitignore
+!.gitignore
+# include vhdl and test bench files
+!*.vhd
+!*.vht
+
+# include readme files
+!*.png
+!*.jpg
+!*.md
