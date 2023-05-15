@@ -23,7 +23,6 @@ begin
         if rising_edge(clk) then
             if addr_ld = '1' then
                 addr_reg <= data;
-                -- report "addr_reg <= " & to_string(data);
             elsif addr_inc = '1' then
                 addr_reg <= addr_reg + 1;
             end if;

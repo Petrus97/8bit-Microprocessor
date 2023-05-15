@@ -21,6 +21,7 @@ begin
     begin
         if rising_edge(clk) then
             if jump_ld = '1' then
+                report "jump_ld = 1";
                 reg <= data_in;
             elsif rst = '1' then
                 reg <= (others => '0');

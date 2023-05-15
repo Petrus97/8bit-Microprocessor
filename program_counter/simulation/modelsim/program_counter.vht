@@ -74,7 +74,7 @@ begin
 	);
 	clk_process : process
 	begin
-		while now < 1000 ns loop
+		while now < 200 ns loop
 			clk <= '1';
 			wait for PERIOD / 2;
 			clk <= '0';
@@ -85,7 +85,6 @@ begin
 
 	pc_stimulus: process
 	begin
-		data_in <= "00000000";
 		jpb <= '0';
 		jpf <= '0';
 		jump_ld <= '0';
@@ -94,12 +93,49 @@ begin
 		pc_oe <= '0';
 		rst <= '1';
 		wait for PERIOD;
+		-- TEST PC INC
+		-- fetch
 		rst <= '0';
 		pc_inc <= '1';
-		wait for PERIOD;
-		pc_inc <= '0';
 		pc_oe <= '1';
 		wait for PERIOD;
+		-- execute
+		pc_inc <= '1';
+		pc_oe <= '1';
+		wait for PERIOD;
+		-- TEST PC LD (forward)
+		-- fetch
+		data_in <= "00000111";
+		jump_ld <= '1'; -- load jump address
+		jpf <= '1'; -- jump forward
+
+		pc_oe <= '0'; -- disable output
+		pc_ld <= '1'; -- load pc
+		pc_inc <= '0'; -- disable increment
+		wait for PERIOD;
+		-- execute
+		pc_ld <= '0'; -- disable load pc
+		pc_oe <= '1'; -- enable output
+		jpf <= '0'; -- disable jump forward
+		jump_ld <= '0'; -- disable load jump address
+		wait for PERIOD;
+		pc_inc <= '1'; -- re-enable increment
+		wait for 5 * PERIOD; -- wait for 5 cycles
+		-- TEST PC LD (backward)
+		-- fetch
+		data_in <= "00000100";
+		pc_oe <= '0'; -- disable output
+		jump_ld <= '1'; -- load jump address
+		jpb <= '1'; -- jump backward
+		pc_ld <= '1'; -- load pc
+		wait for PERIOD;
+		-- execute
+		pc_ld <= '0';
+		pc_oe <= '1'; -- enable output
+		jpb <= '0'; -- disable jump backward
+		jump_ld <= '0'; -- disable load jump address
+		wait for PERIOD;
+		pc_inc <= '1';
 		wait;
 	end process;
 end program_counter_arch;
