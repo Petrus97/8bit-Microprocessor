@@ -33,6 +33,7 @@ architecture program_counter_arch of program_counter_vhd_tst is
 	-- constants                                                 
 	constant PERIOD : time := 10 ns;
 	-- signals                                                   
+	signal rst : std_logic;
 	signal clk : std_logic;
 	signal data_in : std_logic_vector(7 downto 0);
 	signal jpb : std_logic;
@@ -44,6 +45,7 @@ architecture program_counter_arch of program_counter_vhd_tst is
 	signal pc_oe : std_logic;
 	component program_counter
 		port (
+			rst : in std_logic;
 			clk : in std_logic;
 			data_in : in std_logic_vector(7 downto 0);
 			jpb : in std_logic;
@@ -59,6 +61,7 @@ begin
 	i1 : program_counter
 	port map(
 		-- list connections between master ports and signals
+		rst => rst,
 		clk => clk,
 		data_in => data_in,
 		jpb => jpb,
@@ -89,7 +92,9 @@ begin
 		pc_inc <= '0';
 		pc_ld <= '0';
 		pc_oe <= '0';
+		rst <= '1';
 		wait for PERIOD;
+		rst <= '0';
 		pc_inc <= '1';
 		wait for PERIOD;
 		pc_inc <= '0';

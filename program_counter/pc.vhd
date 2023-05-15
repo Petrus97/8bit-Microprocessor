@@ -5,20 +5,20 @@ use ieee.std_logic_arith.all;
 use ieee.std_logic_unsigned.all; -- needed for the + op
 
 entity pc is
-    port(
-        -- rst: in std_logic;
-        clk: in std_logic;
-        alu_result: in std_logic_vector(7 downto 0);
-        pc_ld: in std_logic;
-        pc_inc: in std_logic;
-        to_pc_buf: out std_logic_vector(7 downto 0)
+    port (
+        rst : in std_logic;
+        clk : in std_logic;
+        alu_result : in std_logic_vector(7 downto 0);
+        pc_ld : in std_logic;
+        pc_inc : in std_logic;
+        to_pc_buf : out std_logic_vector(7 downto 0)
     );
 end entity pc;
 
 architecture rtl of pc is
-    signal pc_address: std_logic_vector(7 downto 0) := (others => '0');
+    signal pc_address : std_logic_vector(7 downto 0) := (others => '0');
 begin
-    process(clk)
+    process (clk)
     begin
         if rising_edge(clk) then
             if pc_ld = '1' then
@@ -26,6 +26,8 @@ begin
                 -- report "addr_reg <= " & to_string(data);
             elsif pc_inc = '1' then
                 pc_address <= pc_address + 1;
+            elsif rst = '1' then
+                pc_address <= (others => '0');
             end if;
         end if;
     end process;

@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 package pc_component is
     component jump_reg is
         port (
-            -- rst : in std_logic;
+            rst : in std_logic;
             clk : in std_logic;
             data_in : in std_logic_vector(7 downto 0);
             jump_ld : in std_logic;
@@ -14,7 +14,7 @@ package pc_component is
 
     component pc is
         port (
-            -- rst: in std_logic;
+            rst: in std_logic;
             clk : in std_logic;
             alu_result : in std_logic_vector(7 downto 0);
             pc_ld : in std_logic;
@@ -36,7 +36,7 @@ package pc_component is
 
     component pc_buf is
         port (
-            -- rst: in std_logic;
+            rst: in std_logic;
             clk : in std_logic;
             pc_oe : in std_logic;
             pc_address_in : in std_logic_vector(7 downto 0);
@@ -57,7 +57,7 @@ use work.pc_component.all;
 
 entity program_counter is
     port (
-        -- rst: in std_logic;
+        rst: in std_logic;
         clk : in std_logic;
         data_in : in std_logic_vector(7 downto 0);
         jump_ld : in std_logic;
@@ -78,7 +78,7 @@ architecture pc_arch of program_counter is
 begin
     jump_reg_inst : entity work.jump_reg
         port map (
-            -- rst => rst,
+            rst => rst,
             clk => clk,
             data_in => data_in, -- in from data bus
             jump_ld => jump_ld, -- in from control
@@ -87,7 +87,7 @@ begin
 
     pc_inst : entity work.pc
         port map (
-            -- rst => rst,
+            rst => rst,
             clk => clk,
             alu_result => alu_result, -- in from alu
             pc_ld => pc_ld, -- in from control
@@ -107,7 +107,7 @@ begin
 
     pc_buf_inst : entity work.pc_buf
         port map (
-            -- rst => rst,
+            rst => rst,
             clk => clk,
             pc_oe => pc_oe, -- in from control
             pc_address_in => pc_address_in, -- in from pc
