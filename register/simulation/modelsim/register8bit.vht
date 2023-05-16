@@ -34,6 +34,7 @@ architecture register8bit_arch of register8bit_vhd_tst is
 	constant period : time := 10 ns;
 	constant half_period : time := period / 2;
 	-- signals                                                   
+	signal rst : std_logic;
 	signal addr_inc : std_logic;
 	signal addr_ld : std_logic;
 	signal addr_oe : std_logic;
@@ -42,6 +43,7 @@ architecture register8bit_arch of register8bit_vhd_tst is
 	signal data : std_logic_vector(7 downto 0);
 	component register8bit
 		port (
+			rst : in std_logic;
 			addr_inc : in std_logic;
 			addr_ld : in std_logic;
 			addr_oe : in std_logic;
@@ -54,6 +56,7 @@ begin
 	i1 : register8bit
 	port map(
 		-- list connections between master ports and signals
+		rst => rst,
 		addr_inc => addr_inc,
 		addr_ld => addr_ld,
 		addr_oe => addr_oe,
@@ -62,36 +65,28 @@ begin
 		data => data
 	);
 
-	-- address <= (OTHERS => '0');
-	-- data <= (OTHERS => '0');
-	-- addr_inc <= '0';
-	-- addr_ld <= '0';
-	-- addr_oe <= '0';
-
-	always : process
-		-- optional sensitivity list                                  
-		-- (        )                                                 
-		-- variable declarations                                      
+	register_stimulus : process
 	begin
 		addr_ld <= '0'; -- enable load address
 		addr_inc <= '0'; -- disable increment address
 		addr_oe <= '0'; -- disable output
 		data <= x"00"; -- load data
-		-- addr_oe <= '1'; -- enable output (data should be same as address)
-		-- wait for 10 ns;
-		-- addr_oe <= '0';
-		-- wait for 10 ns;
+		rst <= '1'; -- reset
+		wait for period;
+		rst <= '0'; -- release reset
 		for i in 0 to 255 loop
+			-- fetch
 			addr_oe <= '0'; -- disable output
 			addr_ld <= '1'; -- enable load address
 			data <= std_logic_vector(to_unsigned(i, data'length));
 			wait for period;
+			-- execute
 			addr_ld <= '0'; -- disable load address
 			addr_oe <= '1'; -- enable output
 			wait for period;
 		end loop;
 		wait;
-	end process always;
+	end process register_stimulus;
 
 	clock : process
 	begin
