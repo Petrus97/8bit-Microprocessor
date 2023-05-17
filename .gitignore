@@ -7,6 +7,8 @@
 # include vhdl and test bench files
 !*.vhd
 !*.vht
+!*.do
+!*.sh
 
 # include readme files
 !*.png
