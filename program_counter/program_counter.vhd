@@ -101,6 +101,8 @@ begin
             end if;
             if (pc_oe = '1') then
                 pc_address_out <= pc_address;
+            else
+                pc_address_out <= (others => 'Z');
             end if;
         end if;
         -- pc_address_out <= pc_address;

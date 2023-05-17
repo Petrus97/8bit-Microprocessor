@@ -75,6 +75,8 @@ begin
             end if;
             if addr_oe = '1' then
                 address <= addr_buf;
+            else
+                address <= (others => 'Z');
             end if;
         end if;
     end process;

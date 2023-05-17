@@ -15,7 +15,7 @@ entity accumulator is
         add : in std_logic;
         data_in : in std_logic_vector(7 downto 0);
         gt : out std_logic; -- greater than 1 if acc > temp else 0
-        eq : out std_logic; -- equal to 1 if acc = temp else 0
+        z : out std_logic; -- zero 1 if acc = temp else 0
         data_out : out std_logic_vector(7 downto 0)
     );
 end entity;
@@ -44,9 +44,9 @@ begin
                     gt <= '0';
                 end if;
                 if unsigned(acc_buf) = unsigned(temp_reg) then
-                    eq <= '1';
+                    z <= '1';
                 else
-                    eq <= '0';
+                    z <= '0';
                 end if;
             elsif sub = '1' then
                 acc_buf <= std_logic_vector(unsigned(acc_buf) - unsigned(temp_reg));
@@ -56,6 +56,8 @@ begin
             -- output
             if acc_oe = '1' then
                 data_out <= acc_buf;
+            else
+                data_out <= (others => 'Z');
             end if;
         end if;
     end process;
