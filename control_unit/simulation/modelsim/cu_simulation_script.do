@@ -15,7 +15,7 @@ vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -
 
 add wave -position insertpoint sim:/control_unit_vhd_tst/clk
 add wave -position insertpoint sim:/control_unit_vhd_tst/data_in
-add wave -position insertpoint sim:/control_unit_vhd_tst/debug_out
+# add wave -position insertpoint sim:/control_unit_vhd_tst/debug_out
 add wave -position insertpoint sim:/control_unit_vhd_tst/rst
 
 #Group 0: Memory

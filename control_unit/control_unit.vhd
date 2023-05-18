@@ -30,8 +30,8 @@ entity control_unit is
         ADDR1_LD : out std_logic;
         ADDR2_OE : out std_logic;
         ADDR2_INC : out std_logic;
-        ADDR2_LD : out std_logic;
-        debug_out : out std_logic_vector(7 downto 0)
+        ADDR2_LD : out std_logic
+        -- debug_out : out std_logic_vector(7 downto 0)
     );
 end entity control_unit;
 
@@ -92,7 +92,7 @@ begin
             -- location pointed by the Program Counter (PC)
             instr_reg := data_in; -- The instruction is stored in the Instruction Register
             current_opcode <= get_opcode(instr_reg); -- decoded by the Instruction Decoder
-            print("debug_out: ", current_opcode);
+            -- print("debug_out: ", current_opcode);
 
         end if;
     end process fetch_process;
@@ -388,19 +388,19 @@ begin
             -- In double-length instructions the PC is incremented after the FETCH and EXECUTE cycle
             case current_opcode is
                 when LD_JUMPREG_OP =>
-                    -- increment the pc to get the address
+                    -- increment the pcand the read from memory to get the address
                     PC_INC <= '1';
                     PC_OE <= '1';
                     mem_read <= '1';
                     mem_write <= '0';
                 when LD_ADDR1_OP =>
-                    -- increment the pc to get the address
+                    -- increment the pc and the read from memory to get the address
                     PC_INC <= '1';
                     PC_OE <= '1';
                     mem_read <= '1';
                     mem_write <= '0';
                 when LD_ADDR2_OP =>
-                    -- increment the pc to get the address
+                    -- increment the pc and the read from memory to get the address
                     PC_INC <= '1';
                     PC_OE <= '1';
                     mem_read <= '1';

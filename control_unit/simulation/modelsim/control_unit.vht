@@ -48,7 +48,7 @@ architecture control_unit_arch of control_unit_vhd_tst is
 	signal clk : std_logic;
 	signal CMP : std_logic;
 	signal data_in : std_logic_vector(7 downto 0);
-	signal debug_out : std_logic_vector(7 downto 0);
+	-- signal debug_out : std_logic_vector(7 downto 0);
 	signal JPB : std_logic;
 	signal JPF : std_logic;
 	signal JUMP_LD : std_logic;
@@ -77,7 +77,7 @@ architecture control_unit_arch of control_unit_vhd_tst is
 			clk : in std_logic;
 			CMP : out std_logic;
 			data_in : in std_logic_vector(7 downto 0);
-			debug_out : out std_logic_vector(7 downto 0);
+			-- debug_out : out std_logic_vector(7 downto 0);
 			JPB : out std_logic;
 			JPF : out std_logic;
 			JUMP_LD : out std_logic;
@@ -96,19 +96,20 @@ architecture control_unit_arch of control_unit_vhd_tst is
 	end component;
 
 	signal current_pc : integer := 0;
-	-- type program is array (0 to 255) of std_logic_vector(7 downto 0);
-	-- signal add_program : program := (
-	-- 	LD_ADDR1_OP, -- load the address of B
-	-- 	x"03", -- 
-	-- 	LD_ADDR2_OP, -- load the address of C
-	-- 	x"04", --
-	-- 	LD_ACC_OP, -- move B to ACC
-	-- 	LD_TEMP_OP, -- move C to TEMP
-	-- 	LD_ADDR1_OP, -- load the address of A
-	-- 	x"05", --
-	-- 	ADD_OP, -- add B and C
-	-- 	ST_ACC_OP, -- store the result in A
-	-- );
+	type program is array (0 to 255) of std_logic_vector(7 downto 0);
+	signal add_program : program := (
+		LD_ADDR1_OP, -- load the address of B
+		x"03", -- 
+		LD_ADDR2_OP, -- load the address of C
+		x"04", --
+		LD_ACC_OP, -- move B to ACC
+		LD_TEMP_OP, -- move C to TEMP
+		LD_ADDR1_OP, -- load the address of A
+		x"05", --
+		ADD_OP, -- add B and C
+		ST_ACC1_OP, -- store the result in A
+		others => (others => '0')
+	);
 begin
 	i1 : control_unit
 	port map(
@@ -125,7 +126,7 @@ begin
 		clk => clk,
 		CMP => CMP,
 		data_in => data_in,
-		debug_out => debug_out,
+		-- debug_out => debug_out,
 		JPB => JPB,
 		JPF => JPF,
 		JUMP_LD => JUMP_LD,
@@ -141,9 +142,17 @@ begin
 		z => z,
 		gt => gt
 	);
+
 	clk_process : process
+		variable should_reset : boolean := true;
 	begin
 		while now < 400 ns loop
+			if should_reset then
+				should_reset := false;
+				rst <= '1';
+			else
+				rst <= '0';
+			end if;
 			clk <= '1';
 			wait for PERIOD / 2;
 			clk <= '0';
@@ -152,39 +161,41 @@ begin
 		wait;
 	end process;
 
-	stimulus : process
+	stimulus : process(current_pc)
 		-- optional sensitivity list                                  
 		-- (        )                                                 
 		-- variable declarations                                      
 	begin
-		rst <= '1';
-		wait for PERIOD;
-		rst <= '0';
-		data_in <= LD_ADDR2_OP;
-		wait for PERIOD * 2;
-		data_in <= LD_ADDR1_OP;
-		wait for PERIOD * 2;
-		data_in <= LD_ACC_OP;
-		wait for PERIOD * 2;
-		data_in <= LD_TEMP_OP;
-		wait for PERIOD * 2;
-		data_in <= CMP_OP;
-		wait for PERIOD * 2;
-		data_in <= ADD_OP;
-		wait for PERIOD * 2;
-		data_in <= SUB_OP;
-		wait for PERIOD * 2;
-		data_in <= JPF_OP;
-		wait for PERIOD * 2;
-		data_in <= JPB_OP;
-		wait for PERIOD * 2;
-		data_in <= ST_ACC1_OP;
-		wait for PERIOD * 2;
-		data_in <= ST_ACC2_OP;
-		wait for PERIOD * 2;
-		data_in <= LD_JUMPREG_OP;
-		wait for PERIOD * 2;
-		wait;
+		data_in <= add_program(current_pc);
+		-- wait for PERIOD * 2;
+		-- rst <= '1';
+		-- wait for PERIOD;
+		-- rst <= '0';
+		-- data_in <= LD_ADDR2_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= LD_ADDR1_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= LD_ACC_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= LD_TEMP_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= CMP_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= ADD_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= SUB_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= JPF_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= JPB_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= ST_ACC1_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= ST_ACC2_OP;
+		-- wait for PERIOD * 2;
+		-- data_in <= LD_JUMPREG_OP;
+		-- wait for PERIOD * 2;
+		-- wait;
 	end process stimulus;
 
 	pc_sim: process(clk, rst)
@@ -194,7 +205,7 @@ begin
 			PC := 0;
 		elsif rising_edge(clk) then
 			if PC_LD = '1' then
-				PC := to_integer(unsigned(debug_out));
+				PC := to_integer(unsigned(data_in));
 			elsif PC_INC = '1' then
 				PC := PC + 1;
 			end if;
