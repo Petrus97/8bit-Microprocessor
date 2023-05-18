@@ -23,12 +23,16 @@ end entity;
 architecture rtl of accumulator is
     signal acc_buf : std_logic_vector(7 downto 0);
     signal temp_reg : std_logic_vector(7 downto 0);
+    type cpu_state is (init, fetch, execute);
+    signal current_cpu_state : cpu_state;
 begin
     process (clk, rst)
     begin
         if rst = '1' then
             acc_buf <= (others => '0');
             temp_reg <= (others => '0');
+            gt <= '0';
+            z <= '0';
         elsif rising_edge(clk) then
             if acc_ld = '1' then
                 acc_buf <= data_in;
@@ -36,16 +40,16 @@ begin
                 acc_buf <= std_logic_vector(unsigned(acc_buf) + 1);
             elsif temp_ld = '1' then
                 temp_reg <= data_in;
-            -- check operation
+                -- check operation
             elsif cmp = '1' then
                 if unsigned(acc_buf) > unsigned(temp_reg) then
                     gt <= '1';
-                else
+                    z <= '0';
+                elsif unsigned(acc_buf) = unsigned(temp_reg) then
                     gt <= '0';
-                end if;
-                if unsigned(acc_buf) = unsigned(temp_reg) then
                     z <= '1';
                 else
+                    gt <= '0';
                     z <= '0';
                 end if;
             elsif sub = '1' then
@@ -61,5 +65,23 @@ begin
             end if;
         end if;
     end process;
+
+    state_machine : process (clk, rst)
+        variable state : cpu_state := init;
+    begin
+        if rst = '1' then
+            state := init;
+        elsif rising_edge(clk) then
+            case state is
+                when init =>
+                    state := fetch;
+                when fetch =>
+                    state := execute;
+                when execute =>
+                    state := fetch;
+            end case;
+        end if;
+        current_cpu_state <= state;
+    end process state_machine;
 
 end architecture;

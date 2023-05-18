@@ -41,11 +41,13 @@ architecture accumulator_arch of accumulator_vhd_tst is
 	signal cmp : std_logic;
 	signal data_in : std_logic_vector(7 downto 0);
 	signal data_out : std_logic_vector(7 downto 0);
-	signal eq : std_logic;
+	signal z : std_logic;
 	signal gt : std_logic;
 	signal rst : std_logic;
 	signal sub : std_logic;
 	signal temp_ld : std_logic;
+	type acc_op is (LD_TEMP_STATE, LD_ACC_STATE, ST_ACC_STATE, ADD_STATE, SUB_STATE, CMP_STATE, NOOP_STATE);
+	signal op : acc_op;
 	component accumulator
 		port (
 			acc_inc : in std_logic;
@@ -56,7 +58,7 @@ architecture accumulator_arch of accumulator_vhd_tst is
 			cmp : in std_logic;
 			data_in : in std_logic_vector(7 downto 0);
 			data_out : out std_logic_vector(7 downto 0);
-			eq : out std_logic;
+			z : out std_logic;
 			gt : out std_logic;
 			rst : in std_logic;
 			sub : in std_logic;
@@ -75,15 +77,22 @@ begin
 		cmp => cmp,
 		data_in => data_in,
 		data_out => data_out,
-		eq => eq,
+		z => z,
 		gt => gt,
 		rst => rst,
 		sub => sub,
 		temp_ld => temp_ld
 	);
 	clk_process : process
+		variable should_reset : boolean := true;
 	begin
-		while now < 200 ns loop
+		while now < 400 ns loop
+			if should_reset then
+				should_reset := false;
+				rst <= '1';
+			else
+				rst <= '0';
+			end if;
 			clk <= '1';
 			wait for PERIOD / 2;
 			clk <= '0';
@@ -91,10 +100,9 @@ begin
 		end loop;
 		wait;
 	end process;
+
 	acc_stimulus : process
 	begin
-		-- reset
-		rst <= '1';
 		acc_inc <= '0';
 		acc_ld <= '0';
 		acc_oe <= '0';
@@ -102,30 +110,70 @@ begin
 		cmp <= '0';
 		sub <= '0';
 		temp_ld <= '0';
-		wait for PERIOD;
+		wait for PERIOD * 2; -- first execute
 		-- load the temp register (simulate LD_TEMP)
-		rst <= '0';
-		data_in <= "00000100";
+		data_in <= "00000100"; -- 4
 		temp_ld <= '1';
-		wait for PERIOD;
-		-- load the accumulator (simulate LD_ACC)
+		wait for PERIOD; --fetch
 		temp_ld <= '0';
+		wait for PERIOD; -- execute
+		-- load the accumulator (simulate LD_ACC)
 		acc_ld <= '1';
-		data_in <= "00000011";
-		wait for PERIOD;
-		-- add the registers
+		data_in <= "00000011"; -- 3
+		wait for PERIOD; -- fetch
 		acc_ld <= '0';
-		add <= '1';
-		wait for PERIOD;
-		-- output the result (simulate ST_ACC)
+		wait for PERIOD; -- execute
+		-- add the registers
+		add <= '1'; -- simulate ADD, should store in the acc_buf 7
+		wait for PERIOD; -- fetch
 		add <= '0';
-		acc_oe <= '1';
-		wait for PERIOD;
-		-- perform a compare
+		wait for PERIOD; -- execute
+		-- output the result (simulate ST_ACC)
+		acc_oe <= '1'; -- should output 7
+		wait for PERIOD; -- fetch
 		acc_oe <= '0';
-		cmp <= '1';
-		wait for PERIOD;
+		wait for PERIOD; -- execute
+		-- perform a compare
+		cmp <= '1'; -- comparison between acc_buf(7) and temp_buf(4)
+		wait for PERIOD; -- fetch
 		cmp <= '0';
+		wait for PERIOD; -- execute
+		-- load the temp register (simulate LD_TEMP)
+		data_in <= "00000111"; -- 7
+		temp_ld <= '1';
+		wait for PERIOD; --fetch
+		temp_ld <= '0';
+		wait for PERIOD; -- execute
+		cmp <= '1'; -- comparison between acc_buf(7) and temp_buf(7)
+		wait for PERIOD; -- fetch
+		cmp <= '0';
+		wait for PERIOD; -- execute
+
 		wait;
 	end process acc_stimulus;
+
+	show_op: process(clk, rst)
+		variable current_op : acc_op;
+	begin
+		if rst = '1' then
+			current_op := NOOP_STATE;
+		elsif rising_edge(clk) then
+				if temp_ld = '1' then
+					current_op := LD_TEMP_STATE;
+				elsif acc_ld = '1' then
+					current_op := LD_ACC_STATE;
+				elsif acc_oe = '1' then
+					current_op := ST_ACC_STATE;
+				elsif add = '1' then
+					current_op := ADD_STATE;
+				elsif sub = '1' then
+					current_op := SUB_STATE;
+				elsif cmp = '1' then
+					current_op := CMP_STATE;
+				else
+					current_op := NOOP_STATE;
+			end if;
+		end if;
+		op <= current_op;
+	end process show_op;
 end accumulator_arch;
