@@ -1,6 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+use work.isa.all; -- instruction set architecture
+use work.utils.all; -- utility functions
+
 package control_unit_pkg is
     component control_unit is
     port (

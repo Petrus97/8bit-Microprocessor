@@ -8,6 +8,7 @@ package ISA is
     -- constant JUMP_OP : opcode := "0001";
     -- constant STORE_OP : opcode := "1000";
     -- constant LOAD_OP : opcode := "1010";
+    constant NOOP_OP : opcode := "00000000";
     -- Single byte instructions
     constant CMP_OP : opcode := "00000001";
     constant ADD_OP : opcode := "00000010";
@@ -46,7 +47,7 @@ package body ISA is
             when "10101000" => return LD_JUMPREG_OP;
             when "10101001" => return LD_ADDR1_OP;
             when "10101010" => return LD_ADDR2_OP;
-            when others => return "00000000";
+            when others => return NOOP_OP;
         end case;
     end function;
 end ISA;
