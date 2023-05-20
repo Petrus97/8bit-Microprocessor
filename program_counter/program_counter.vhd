@@ -78,14 +78,12 @@ architecture pc_arch of program_counter is
     signal pc_address : std_logic_vector(7 downto 0) := (others => '0');
 begin
     process (clk, rst)
-        -- variable pc_address : std_logic_vector(7 downto 0);
-        variable my_line : line;
         variable jump_register : std_logic_vector(7 downto 0);
     begin
         if rst = '1' then
-            pc_address <= (others => '0');
+            -- pc_address <= (others => 'Z');
             jump_register := (others => '0');
-            pc_address_out <= pc_address;
+            -- pc_address_out <= (others => 'Z');
         elsif rising_edge(clk) then
             if (jump_ld = '1') then
                 jump_register := data_in;
@@ -99,12 +97,12 @@ begin
             elsif (pc_inc = '1') then
                 pc_address <= std_logic_vector(unsigned(pc_address) + 1);
             end if;
-            if (pc_oe = '1') then
-                pc_address_out <= pc_address;
-            else
-                pc_address_out <= (others => 'Z');
-            end if;
+            -- if (pc_oe = '1') then
+            --     pc_address_out <= pc_address;
+            -- else
+            --     pc_address_out <= (others => 'Z');
+            -- end if;
         end if;
-        -- pc_address_out <= pc_address;
     end process;
+    pc_address_out <= pc_address when pc_oe = '1' else (others => 'Z');
 end pc_arch;

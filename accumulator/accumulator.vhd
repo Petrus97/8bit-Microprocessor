@@ -58,13 +58,14 @@ begin
                 acc_buf <= std_logic_vector(unsigned(acc_buf) + unsigned(temp_reg));
             end if;
             -- output
-            if acc_oe = '1' then
-                data_out <= acc_buf;
-            else
-                data_out <= (others => 'Z');
-            end if;
+            -- if acc_oe = '1' then
+            --     data_out <= acc_buf;
+            -- else
+            --     data_out <= (others => 'Z');
+            -- end if;
         end if;
     end process;
+    data_out <= acc_buf when acc_oe = '1' else (others => 'Z');
 
     state_machine : process (clk, rst)
         variable state : cpu_state := init;

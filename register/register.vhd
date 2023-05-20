@@ -78,11 +78,12 @@ begin
             elsif addr_inc = '1' then
                 addr_buf <= addr_buf + 1;
             end if;
-            if addr_oe = '1' then
-                address <= addr_buf;
-            else
-                address <= (others => 'Z');
-            end if;
+            -- if addr_oe = '1' then
+            --     address <= addr_buf;
+            -- else
+            --     address <= (others => 'Z');
+            -- end if;
         end if;
     end process;
+    address <= addr_buf when addr_oe = '1' else (others => 'Z');
 end architecture rtl;
