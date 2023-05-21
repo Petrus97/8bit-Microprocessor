@@ -134,15 +134,19 @@ begin
                     SUB <= '1';
                 when JPF_OP =>
                     JPF <= '1';
+                    PC_LD <= '1';
                 when JPB_OP =>
                     JPB <= '1';
+                    PC_LD <= '1';
                 when JPF_G_OP =>
                     if status_register = greater then
                         JPF <= '1';
+                        PC_LD <= '1';
                     end if;
                 when JPF_Z_OP =>
                     if status_register = equal then
                         JPF <= '1';
+                        PC_LD <= '1';
                     end if;
                 when ST_ACC1_OP =>
                     ADDR1_OE <= '1';

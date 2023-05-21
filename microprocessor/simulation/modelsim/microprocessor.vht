@@ -74,6 +74,32 @@ architecture microprocessor_arch of microprocessor_vhd_tst is
 		ST_ACC1_OP, -- store the result in A
 		others => (others => '0')
 	);
+	-- if (A >= 0) then B = C
+	signal branch_program: program := (
+		LD_ADDR1_OP, -- load the address of A (0x00)
+		x"F0", -- address of A (0x01)
+		LD_ADDR2_OP, -- load the address of 0 variable (0x02)
+		x"F1", -- address of 0 variable (0x03)
+		LD_JUMPREG_OP, -- (0x04)
+		x"0E", -- address of B = C (0x05)
+		LD_ACC_OP, -- move A to ACC (0x06)
+		LD_TEMP_OP, -- move 0 to TEMP (0x07)
+		CMP_OP, -- compare A and 0 		(0x08)
+		JPF_G_OP, -- if A > 0 then jump to 	(0x09)
+		JPF_Z_OP, -- if A == 0 then jump to 	(0x0A)
+		-- else operations
+		LD_JUMPREG_OP, -- (0x0B)
+		x"14", -- else jump to 0x14	(0x0C)
+		JPF_OP, -- jump to 0x14	(0x0D)
+		-- if operations (here we load B and C)
+		LD_ADDR1_OP, -- load the address of C (0x0E)
+		x"F3", -- address of C (0x0F)
+		LD_ADDR2_OP, -- load the address of B (0x10)
+		x"F2", -- address of B (0x11)
+		LD_ACC_OP, -- move C to ACC (0x12)
+		ST_ACC2_OP, -- store C in B (0x13)
+		others => (others => '0') -- (0x14 - 0xFF)
+	);
 begin
 	i1 : microprocessor
 	port map(
@@ -88,8 +114,14 @@ begin
 		step => step,
 		wr => wr
 	);
-	add_program(240) <= x"03";
-	add_program(241) <= x"04";
+	add_program(240) <= x"03"; -- 0xF0 value of A
+	add_program(241) <= x"04"; -- 0xF1 value of 0
+
+	branch_program(240) <= x"03"; -- 0xF0 value of A
+	branch_program(241) <= x"00"; -- 0xF1 value of 0
+	branch_program(242) <= x"04"; -- 0xF2 value of B
+	branch_program(243) <= x"77"; -- 0xF3 value of C
+
 
 	clk_process : process
 		variable should_reset : boolean := true;
@@ -112,7 +144,7 @@ begin
 	program_process : process(address)
 	begin
 		-- wait for PERIOD;
-		data_in <= add_program(to_integer(unsigned(address)));
+		data_in <= branch_program(to_integer(unsigned(address)));
 		-- wait for PERIOD;
 		-- data <= add_program(1);
 		-- wait for PERIOD;

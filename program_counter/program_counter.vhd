@@ -89,11 +89,9 @@ begin
                 jump_register := data_in;
             end if;
             if (pc_ld = '1' and jpf = '1') then
-                pc_address <= data_in;
-                pc_address <= std_logic_vector(unsigned(pc_address) + unsigned(jump_register));
+                pc_address <= jump_register;-- std_logic_vector(unsigned(pc_address) + unsigned(jump_register));
             elsif (pc_ld = '1' and jpb = '1') then
-                pc_address <= data_in;
-                pc_address <= std_logic_vector(unsigned(pc_address) - unsigned(jump_register));
+                pc_address <= jump_register;--std_logic_vector(unsigned(pc_address) - unsigned(jump_register));
             elsif (pc_inc = '1') then
                 pc_address <= std_logic_vector(unsigned(pc_address) + 1);
             end if;

@@ -35,7 +35,7 @@ architecture program_counter_arch of program_counter_vhd_tst is
 	-- signals                                                   
 	signal rst : std_logic;
 	signal clk : std_logic;
-	signal data_in : std_logic_vector(7 downto 0);
+	signal data_in : std_logic_vector(7 downto 0) := (others => '0');
 	signal jpb : std_logic;
 	signal jpf : std_logic;
 	signal jump_ld : std_logic;
@@ -124,10 +124,12 @@ begin
 		-- TEST PC LD (backward)
 		-- fetch
 		data_in <= "00000100";
-		pc_oe <= '0'; -- disable output
-		jump_ld <= '1'; -- load jump address
 		jpb <= '1'; -- jump backward
+		jump_ld <= '1'; -- load jump address
+
+		pc_oe <= '0'; -- disable output
 		pc_ld <= '1'; -- load pc
+		pc_inc <= '0'; -- disable increment
 		wait for PERIOD;
 		-- execute
 		pc_ld <= '0';

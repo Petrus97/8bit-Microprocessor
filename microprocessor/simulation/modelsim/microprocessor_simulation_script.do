@@ -37,7 +37,10 @@ add wave -group "Control Unit" -radix ascii -symbolic \
 	sim:/microprocessor_vhd_tst/i1/CU/debug_process/debug_instr
 
  add wave -group "Accumulator" -radix ascii -symbolic sim:/microprocessor_vhd_tst/i1/acc/*
- add wave -group "Program Counter" -radix ascii -symbolic sim:/microprocessor_vhd_tst/i1/pc/*
+ add wave -group "Program Counter" -radix ascii -symbolic \
+ 	sim:/microprocessor_vhd_tst/i1/pc/* \
+	sim:/microprocessor_vhd_tst/i1/pc/line__80/jump_register
+
  add wave -group "Reg1" -radix ascii -symbolic sim:/microprocessor_vhd_tst/i1/reg1/*
  add wave -group "Reg2" -radix ascii -symbolic sim:/microprocessor_vhd_tst/i1/reg2/*
 
