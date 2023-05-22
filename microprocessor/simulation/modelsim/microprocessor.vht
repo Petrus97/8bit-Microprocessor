@@ -44,12 +44,14 @@ architecture microprocessor_arch of microprocessor_vhd_tst is
 	signal data_out : std_logic_vector(7 downto 0);
 	signal rd : std_logic;
 	signal rst : std_logic;
-	signal step : std_logic;
+	signal step : std_logic := '1';
 	signal wr : std_logic;
+	signal en : std_logic;
 	component microprocessor
 		port (
 			address : out std_logic_vector(7 downto 0);
 			clk : in std_logic;
+			en : in std_logic;
 			-- data : inout std_logic_vector(7 downto 0);
 			data_in : in std_logic_vector(7 downto 0);
 			data_out : out std_logic_vector(7 downto 0);
@@ -75,7 +77,7 @@ architecture microprocessor_arch of microprocessor_vhd_tst is
 		others => (others => '0')
 	);
 	-- if (A >= 0) then B = C
-	signal branch_program: program := (
+	signal branch_program : program := (
 		LD_ADDR1_OP, -- load the address of A (0x00)
 		x"F0", -- address of A (0x01)
 		LD_ADDR2_OP, -- load the address of 0 variable (0x02)
@@ -100,12 +102,14 @@ architecture microprocessor_arch of microprocessor_vhd_tst is
 		ST_ACC2_OP, -- store C in B (0x13)
 		others => (others => '0') -- (0x14 - 0xFF)
 	);
+	signal current_pc : integer := 0;
 begin
 	i1 : microprocessor
 	port map(
 		-- list connections between master ports and signals
 		address => address,
 		clk => clk,
+		en => en,
 		-- data => data,
 		data_in => data_in,
 		data_out => data_out,
@@ -122,17 +126,34 @@ begin
 	branch_program(242) <= x"04"; -- 0xF2 value of B
 	branch_program(243) <= x"77"; -- 0xF3 value of C
 
+	-- en <= '1'; -- enable the clock input
+	en <= '0'; -- disable the clock input, enable the step input
+
+	reset_process : process
+	begin
+		rst <= '1';
+		wait for PERIOD;
+		rst <= '0';
+		wait for PERIOD;
+		wait;
+	end process;
+
+	step_process : process
+	begin
+		wait until rst = '0';
+		while now < 2000 ns loop
+			step <= '1';
+			wait for PERIOD * 2;
+			step <= '0';
+			wait for PERIOD * 2;
+		end loop;
+		wait;
+	end process;
 
 	clk_process : process
-		variable should_reset : boolean := true;
 	begin
-		while now < 400 ns loop
-			if should_reset then
-				should_reset := false;
-				rst <= '1';
-			else
-				rst <= '0';
-			end if;
+		wait until rst = '0';
+		while now < 2000 ns loop
 			clk <= '1';
 			wait for PERIOD / 2;
 			clk <= '0';
@@ -141,19 +162,9 @@ begin
 		wait;
 	end process;
 
-	program_process : process(address)
+	program_process : process (address)
 	begin
-		-- wait for PERIOD;
-		data_in <= branch_program(to_integer(unsigned(address)));
-		-- wait for PERIOD;
-		-- data <= add_program(1);
-		-- wait for PERIOD;
-		-- wait;
+		data_in <= add_program(to_integer(unsigned(address)));
 	end process;
 
-	-- program_process : process(address)
-	-- begin
-	-- 	report "address = " & integer'image(to_integer(unsigned(address)));
-	-- 	data <= add_program(to_integer(unsigned(address)));
-	-- end process;
 end microprocessor_arch;

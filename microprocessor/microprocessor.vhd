@@ -13,11 +13,15 @@ use pc.program_counter_pkg.all;
 -- load accumulator package
 library acc;
 use acc.accumulator_pkg.all;
+-- load the input mux package
+library mux;
+use mux.input_mux_pkg.all;
 
 entity microprocessor is
     port (
         clk : in std_logic; -- 50MHz
         rst : in std_logic;
+        en : in std_logic; -- enable
         -- data : inout std_logic_vector(7 downto 0);
         data_in : in std_logic_vector(7 downto 0);
         data_out : out std_logic_vector(7 downto 0);
@@ -33,6 +37,7 @@ architecture arch of microprocessor is
     signal data_bus_out : std_logic_vector(7 downto 0);
     signal address_bus : std_logic_vector(7 downto 0);
     signal read_mem, write_mem : std_logic;
+    signal internal_clk : std_logic;
 
     -- CU <-> Accumulator signals
     signal z, gt : std_logic; -- zero and greater than flags ALU -> CU
@@ -72,9 +77,18 @@ architecture arch of microprocessor is
         others => (others => '0')
     );
 begin
-    CU : control_unit port map(
+
+    mux : input_mux port map(
         clk => clk,
+        step => step,
+        en => en,
+        clk_out => internal_clk
+    );
+
+    CU : control_unit port map(
+        clk => internal_clk,
         rst => rst,
+        -- step => step,
         data_in => data_bus_in, -- input data
         mem_read => read_mem, -- read from memory signal
         mem_write => write_mem, -- write to memory signal
@@ -105,7 +119,7 @@ begin
     );
 
     acc : accumulator port map(
-        clk => clk,
+        clk => internal_clk,
         rst => rst,
         acc_oe => acc_oe, -- input signal output enable
         acc_inc => acc_inc, -- input signal increment
@@ -121,7 +135,7 @@ begin
     );
 
     pc : program_counter port map(
-        clk => clk,
+        clk => internal_clk,
         rst => rst,
         pc_inc => pc_inc, -- input signal increment
         pc_ld => pc_ld, -- input signal load
@@ -134,7 +148,7 @@ begin
     );
 
     reg1 : register8bit port map(
-        clk => clk,
+        clk => internal_clk,
         rst => rst,
         data => data_bus_in, -- input data
         addr_oe => addr1_oe, -- input signal oe
@@ -144,7 +158,7 @@ begin
     );
 
     reg2 : register8bit port map(
-        clk => clk,
+        clk => internal_clk,
         rst => rst,
         data => data_bus_in, -- input data
         addr_oe => addr2_oe, -- input signal oe
@@ -158,5 +172,5 @@ begin
     data_bus_in <= data_in;
     data_out <= data_bus_out when write_mem = '1' else
         "ZZZZZZZZ";
-    address <= address_bus;
+    address <= address_bus; -- when read_mem = '1' else "ZZZZZZZZ";
 end arch; -- arch

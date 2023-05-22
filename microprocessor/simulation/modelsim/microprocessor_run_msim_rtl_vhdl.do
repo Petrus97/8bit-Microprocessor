@@ -5,6 +5,10 @@ if {[file exists rtl_work]} {
 vlib rtl_work
 vmap work rtl_work
 
+vlib mux
+vmap mux mux
+vcom -93 -work mux {/home/ale19/Desktop/8bit-Microprocessor/input_mux/input_mux.vhd}
+vcom -93 -work mux {/home/ale19/Desktop/8bit-Microprocessor/input_mux/input_mux_pkg.vhd}
 vlib pc
 vmap pc pc
 vcom -93 -work pc {/home/ale19/Desktop/8bit-Microprocessor/program_counter/program_counter_pkg.vhd}
@@ -27,6 +31,6 @@ vcom -93 -work work {/home/ale19/Desktop/8bit-Microprocessor/microprocessor/micr
 
 vcom -93 -work work {/home/ale19/Desktop/8bit-Microprocessor/microprocessor/simulation/modelsim/microprocessor.vht}
 
-vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -L pc -L acc -L reg -L cu -voptargs="+acc"  microprocessor_vhd_tst
+vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -L rtl_work -L work -L mux -L pc -L acc -L reg -L cu -voptargs="+acc"  microprocessor_vhd_tst
 
 do /home/ale19/Desktop/8bit-Microprocessor/microprocessor/simulation/modelsim/microprocessor_simulation_script.do
