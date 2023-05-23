@@ -15,6 +15,7 @@ vsim -t 1ps -L altera -L lpm -L sgate -L altera_mf -L altera_lnsim -L cyclonev -
 add wave *
 
 # add wave -position insertpoint sim:/ram_vhd_tst/i1/ram_inst/ram_array
+add wave -position insertpoint sim:/ram_vhd_tst/i1/ram_array
 
 view structure
 view signals
