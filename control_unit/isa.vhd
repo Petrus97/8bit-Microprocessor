@@ -8,24 +8,24 @@ package ISA is
     -- constant JUMP_OP : opcode := "0001";
     -- constant STORE_OP : opcode := "1000";
     -- constant LOAD_OP : opcode := "1010";
-    constant NOOP_OP : opcode := "00000000";
+    constant NOOP_OP : opcode := "00000000"; -- 0x00
     -- Single byte instructions
-    constant CMP_OP : opcode := "00000001";
-    constant ADD_OP : opcode := "00000010";
-    constant SUB_OP : opcode := "00000011";
-    constant JPF_OP : opcode := "00010000";
-    constant JPB_OP : opcode := "00010001";
-    constant JPF_G_OP : opcode := "00010010";
-    constant JPF_Z_OP : opcode := "00010011";
-    constant ST_ACC1_OP : opcode := "10000001";
-    constant ST_ACC2_OP : opcode := "10000010";
-    constant LD_ACC_OP : opcode := "10100000";
-    constant LD_TEMP_OP : opcode := "10100001";
+    constant CMP_OP : opcode := "00000001"; -- 0x01
+    constant ADD_OP : opcode := "00000010"; -- 0x02
+    constant SUB_OP : opcode := "00000011"; -- 0x03
+    constant JPF_OP : opcode := "00010000"; -- 0x10
+    constant JPB_OP : opcode := "00010001"; -- 0x11
+    constant JPF_G_OP : opcode := "00010010"; -- 0x12
+    constant JPF_Z_OP : opcode := "00010011"; -- 0x13
+    constant ST_ACC1_OP : opcode := "10000001"; -- 0x81
+    constant ST_ACC2_OP : opcode := "10000010"; -- 0x82
+    constant LD_ACC_OP : opcode := "10100000"; -- 0xA0
+    constant LD_TEMP_OP : opcode := "10100001"; -- 0xA1
 
     -- Two byte instructions
-    constant LD_JUMPREG_OP : opcode := "10101000";
-    constant LD_ADDR1_OP : opcode := "10101001";
-    constant LD_ADDR2_OP : opcode := "10101010";
+    constant LD_JUMPREG_OP : opcode := "10101000"; -- 0xA8
+    constant LD_ADDR1_OP : opcode := "10101001"; -- 0xA9
+    constant LD_ADDR2_OP : opcode := "10101010"; -- 0xAA
     function get_opcode(instr : std_logic_vector(7 downto 0)) return opcode;
 end package;
 
