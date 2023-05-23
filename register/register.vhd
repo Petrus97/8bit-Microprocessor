@@ -1,34 +1,3 @@
--- library ieee;
--- use ieee.std_logic_1164.all;
-
--- package reg_component is
---     component addr_buf is
---         port (
---             -- rst: in std_logic;
---             clk : in std_logic;
---             addr_oe : in std_logic;
---             from_addr : in std_logic_vector(7 downto 0);
---             address : out std_logic_vector(7 downto 0)
---         );
---     end component;
-
---     component addr is
---         port (
---             rst : in std_logic;
---             clk : in std_logic;
---             data : in std_logic_vector(7 downto 0);
---             addr_ld : in std_logic;
---             addr_inc : in std_logic;
---             to_addr_buf : out std_logic_vector(7 downto 0)
---         );
---     end component;
-
--- end package;
-
--- package body reg_component is
-
--- end package body;
---- end of package
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
@@ -70,20 +39,16 @@ begin
 
     process (clk, rst)
     begin
-        if rising_edge(clk) then
-            if rst = '1' then
-                addr_buf <= (others => '0');
-            elsif addr_ld = '1' then
+        if rst = '1' then
+            addr_buf <= (others => '0');
+        elsif rising_edge(clk) then
+            if addr_ld = '1' then
                 addr_buf <= data;
             elsif addr_inc = '1' then
                 addr_buf <= addr_buf + 1;
             end if;
-            -- if addr_oe = '1' then
-            --     address <= addr_buf;
-            -- else
-            --     address <= (others => 'Z');
-            -- end if;
         end if;
     end process;
-    address <= addr_buf when addr_oe = '1' else (others => 'Z');
+    address <= addr_buf when addr_oe = '1' else
+        (others => 'Z');
 end architecture rtl;
