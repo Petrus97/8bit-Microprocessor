@@ -36,37 +36,39 @@ architecture ram_arch of ram_vhd_tst is
 	-- signals                                                   
 	signal addr : std_logic_vector(7 downto 0);
 	signal clk : std_logic;
-	-- signal rst : std_logic;
-	signal data_io : std_logic_vector(7 downto 0) := (others => 'Z');
+	signal rst : std_logic;
+	signal data_in : std_logic_vector(7 downto 0);
+	signal data_out : std_logic_vector(7 downto 0);
 	signal oe : std_logic := '0';
 	signal we : std_logic := '0';
-	signal en : std_logic := '1';
+	signal prog_select : std_logic := '0';
 	-- -- define my signals
 	-- signal data_in : std_logic_vector(7 downto 0);
 	-- signal data_out : std_logic_vector(7 downto 0);
 	-- -- signal bidir : std_logic_vector(7 downto 0);
 	component ram
 		port (
-			en: in std_logic;
-			addr : in std_logic_vector(7 downto 0);
+			rst : in std_logic;
+			prog_select : in std_logic; -- switch to select the program
 			clk : in std_logic;
-			-- rst : in std_logic;
-			data_io : inout std_logic_vector(7 downto 0);
-			oe : in std_logic;
-			we : in std_logic
+			we : in std_logic; -- write enable
+			oe : in std_logic; -- output enable
+			addr : in std_logic_vector(7 downto 0);
+			data_in : in std_logic_vector(7 downto 0);
+			data_out : out std_logic_vector(7 downto 0)
 		);
 	end component;
 begin
 	i1 : ram
 	port map(
-		-- list connections between master ports and signals
-		addr => addr,
+		rst => rst,
+		prog_select => prog_select,
 		clk => clk,
-		-- rst => rst,
-		data_io => data_io,
-		oe => oe,
 		we => we,
-		en => en
+		oe => oe,
+		addr => addr,
+		data_in => data_in,
+		data_out => data_out
 	);
 	-- data_io <= data_in when oe = '0' else (others => 'Z');
 
@@ -75,98 +77,70 @@ begin
 
 	process
 	begin
-		-- Initialize RAM data
-		-- wait for 10 ns;
-		-- we <= '1';
-		-- addr <= "00000000";
-		-- data_io <= "00001111";
-		-- wait for 10 ns;
-		-- we <= '0';
+		rst <= '1';
+		prog_select <= '0'; -- select the add program
+		wait for PERIOD;
+		rst <= '0';
+		wait for PERIOD;
 
-		-- -- Read from RAM
-		-- wait for 10 ns;
-		-- oe <= '1';
-		-- addr <= "00000000";
-		-- wait for 10 ns;
-		-- -- wait for PERIOD; -- wait for the reset
-		w_loop : for i in 0 to 100 loop
+		report "Write test (all 0xFF)" severity note;
+		w_loop : for i in 0 to 255 loop
 			oe <= '0'; -- disable the output
 			we <= '1'; -- enable the write
 			addr <= std_logic_vector(to_unsigned(i, 8));
-			data_io <= std_logic_vector(to_unsigned(i, 8));
+			data_in <= x"FF"; -- put all memory to 0xFF
+			wait for PERIOD;
+		end loop; -- w_loop
+		
+		report "Write test (from 0x00 to 0xFF)" severity note;
+		w2_loop: for i in 0 to 255 loop
+			oe <= '0'; -- disable the output
+			we <= '1'; -- enable the write
+			addr <= std_logic_vector(to_unsigned(i, 8));
+			data_in <= std_logic_vector(to_unsigned(i, 8));
+			wait for PERIOD;
+		end loop; -- w2_loop
+
+		report "Read test" severity note;
+		r_loop : for i in 0 to 255 loop
+			oe <= '1'; -- disable the output
+			we <= '0'; -- enable the write
+			addr <= std_logic_vector(to_unsigned(i, 8));
+			wait for PERIOD / 2;
+			assert data_out = std_logic_vector(to_unsigned(i, 8)) report "Error in the Data out: " & integer'image(to_integer(unsigned(data_out))) & " expected: " & integer'image(i) severity error;
+			wait for PERIOD / 2;
+		end loop ; -- r_loop
+
+		report "Reset test" severity note;
+		reset_loop: for i in 0 to 255 loop
+			oe <= '0'; -- disable the output
+			we <= '1'; -- enable the write
+			addr <= std_logic_vector(to_unsigned(i, 8));
+			data_in <= x"00"; -- put all memory to 0x00
+			wait for PERIOD;
+		end loop; -- reset_loop
+
+
+		report "Write/Read test" severity note;
+		rw_loop : for i in 200 to 255 loop
+			oe <= '0'; -- disable the output
+			we <= '1'; -- enable the write
+			addr <= std_logic_vector(to_unsigned(i, 8));
+			data_in <= std_logic_vector(to_unsigned(i, 8));
 			wait for PERIOD;
 			oe <= '1';
 			we <= '0';
-			wait for PERIOD;
+			wait for 1 ns;
+			assert data_out = std_logic_vector(to_unsigned(i, 8)) report "Error in the Data out: " & integer'image(to_integer(unsigned(data_out))) & " expected: " & integer'image(i) severity error;
+			wait for PERIOD - 1 ns;
 		end loop; -- 
-		-- reset the ram
-		-- TEST0: Write a value to the 0x00 address and read it
-		-- Write to 0x00
-		-- oe <= '0'; -- disable the output
-		-- we <= '1'; -- enable the write
-		-- write data in that address
-		-- data_in <= x"01";
-		-- select the address to write to
-		-- addr <= x"00";
-		-- wait for PERIOD;
-		-- Read from 0x00
-		-- addr <= x"01";
-		-- data_in <= x"02";
-		-- we <= '0'; -- disable the write
-		-- oe <= '1'; -- enable the output
-		-- wait for PERIOD;
-		-- we <= '0'; -- disable the write
-		-- -- TEST1: Modify the value to the 0x00 address and read it
-		-- -- Write to 0x00
-		-- oe <= '0'; -- disable the output
-		-- we <= '1'; -- enable the write
-		-- -- select the address to write to
-		-- addr <= x"00";
-		-- -- write data in that address
-		-- data_in <= x"FF";
-		-- wait for PERIOD;
-		-- -- Read from 0x00
-		-- addr <= x"00";
-		-- we <= '0'; -- disable the write
-		-- oe <= '1'; -- enable the output
-		-- wait for PERIOD;
-
-		-- -- TEST2: Write a value to the 0xFF address(last one) and read it
-		-- -- Write to 0xFF
-		-- oe <= '0'; -- disable the output
-		-- we <= '1'; -- enable the write
-		-- -- select the address to write to
-		-- addr <= x"FF";
-		-- -- write data in that address
-		-- data_in <= x"01";
-		-- wait for PERIOD;
-		-- -- Read from 0xFF
-		-- addr <= x"FF";
-		-- we <= '0'; -- disable the write
-		-- oe <= '1'; -- enable the output
-		-- wait for PERIOD;
-
-		-- -- TEST3: Modify the value to the 0xFF address and read it
-		-- -- Write to 0xFF
-		-- oe <= '0'; -- disable the output
-		-- we <= '1'; -- enable the write
-		-- -- select the address to write to
-		-- addr <= x"FF";
-		-- -- write data in that address
-		-- data_in <= x"FF";
-		-- wait for PERIOD;
-		-- -- Read from 0xFF
-		-- addr <= x"FF";
-		-- we <= '0'; -- disable the write
-		-- oe <= '1'; -- enable the output
-		-- wait for PERIOD;
 		wait;
 	end process;
 
 	clk_process : process
 		variable should_reset : boolean := true;
 	begin
-		while now < 400 ns loop
+		while now < 16000 ns loop
 			-- if should_reset then
 			-- 	should_reset := false;
 			-- 	rst <= '1';
