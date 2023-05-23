@@ -171,6 +171,7 @@ begin
     wr <= write_mem;
     data_bus_in <= data_in;
     data_out <= data_bus_out when write_mem = '1' else
+        (others => '0') when rst = '1' else
         "ZZZZZZZZ";
     address <= address_bus; -- when read_mem = '1' else "ZZZZZZZZ";
 end arch; -- arch
