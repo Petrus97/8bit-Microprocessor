@@ -21,8 +21,6 @@ end entity ram;
 architecture rtl of ram is
 	type ram_type is array(0 to 255) of std_logic_vector(7 downto 0);
 	signal ram_array : ram_type;
-	-- type ram_state is (idle, write, read);
-	-- signal state : ram_state := idle;
 
 	-- A = B + C
 	signal add_program : ram_type := (
@@ -81,9 +79,7 @@ begin
 				branch_program(243) <= x"77"; -- 0xF3 value of C
 			end if;
 		elsif rising_edge(clk) then
-			if (we = '1') then -- write data to address 'addr'
-				report "Writing to address " & integer'image(to_integer(unsigned(addr)));
-				--convert 'addr' type to integer from std_logic_vector
+			if we = '1' then -- write data to address 'addr'
 				ram_array(to_integer(unsigned(addr))) <= data_in;
 			end if;
 		end if;

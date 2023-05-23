@@ -4,10 +4,7 @@ use ieee.numeric_std.all;
 
 package ISA is
     subtype opcode is std_logic_vector(7 downto 0);
-    -- constant ALU_OP : opcode := "0000";
-    -- constant JUMP_OP : opcode := "0001";
-    -- constant STORE_OP : opcode := "1000";
-    -- constant LOAD_OP : opcode := "1010";
+
     constant NOOP_OP : opcode := "00000000"; -- 0x00
     -- Single byte instructions
     constant CMP_OP : opcode := "00000001"; -- 0x01
@@ -26,6 +23,7 @@ package ISA is
     constant LD_JUMPREG_OP : opcode := "10101000"; -- 0xA8
     constant LD_ADDR1_OP : opcode := "10101001"; -- 0xA9
     constant LD_ADDR2_OP : opcode := "10101010"; -- 0xAA
+    -- convert the instruction to an opcode
     function get_opcode(instr : std_logic_vector(7 downto 0)) return opcode;
 end package;
 

@@ -22,7 +22,6 @@ entity microprocessor is
         clk : in std_logic; -- 50MHz
         rst : in std_logic;
         en : in std_logic; -- enable
-        -- data : inout std_logic_vector(7 downto 0);
         data_in : in std_logic_vector(7 downto 0);
         data_out : out std_logic_vector(7 downto 0);
         address : out std_logic_vector(7 downto 0);
@@ -173,5 +172,5 @@ begin
     data_out <= data_bus_out when write_mem = '1' else
         (others => '0') when rst = '1' else
         "ZZZZZZZZ";
-    address <= address_bus; -- when read_mem = '1' else "ZZZZZZZZ";
-end arch; -- arch
+    address <= address_bus;
+end arch;

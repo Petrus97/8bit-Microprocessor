@@ -31,7 +31,6 @@ entity control_unit is
         ADDR2_OE : out std_logic;
         ADDR2_INC : out std_logic;
         ADDR2_LD : out std_logic
-        -- debug_out : out std_logic_vector(7 downto 0)
     );
 end entity control_unit;
 
@@ -87,13 +86,8 @@ begin
         -- variable instr_reg : std_logic_vector(7 downto 0);
     begin
         if current_cpu_state = fetch then
-            -- mem_read <= '1'; -- the microprocessor loads an instruction from the memory 
-            -- mem_write <= '0'; -- the microprocessor does not write to the memory
             -- location pointed by the Program Counter (PC)
             instr_reg <= data_in; -- The instruction is stored in the Instruction Register
-            -- current_opcode <= get_opcode(instr_reg); -- decoded by the Instruction Decoder
-            -- print("debug_out: ", current_opcode);
-
         end if;
     end process fetch_process;
 
@@ -184,14 +178,14 @@ begin
             end case;
         elsif current_cpu_state = init then
             null; -- No need to update signals in the init state
-        elsif current_cpu_state = fetch then
+        elsif current_cpu_state = fetch then -- the fecth state always increments the PC
             PC_INC <= '1';
             PC_OE <= '1';
             mem_read <= '1';
         end if;
     end process execute_process;
 
-    status_upd : process (gt, z)
+    status_upd : process (gt, z) -- process to update the status register
     begin
         if gt = '1' then
             status_register <= greater;
