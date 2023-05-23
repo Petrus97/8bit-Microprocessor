@@ -159,9 +159,11 @@ begin
                 when LD_ACC_OP =>
                     ACC_LD <= '1';
                     ADDR1_OE <= '1';
+                    mem_read <= '1';
                 when LD_TEMP_OP =>
                     TEMP_LD <= '1';
                     ADDR2_OE <= '1';
+                    mem_read <= '1';
                 when LD_JUMPREG_OP =>
                     JUMP_LD <= '1';
                     PC_INC <= '1';
