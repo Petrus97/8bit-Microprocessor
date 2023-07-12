@@ -1,5 +1,5 @@
 # Microprocessor 8bit with VHDL
-
+Project realization for Digital Electronic Design with VHDL (1FA326) in Uppsala University.
 ![architecture](images/architecture.png)
 
 ## Submodules
@@ -73,21 +73,42 @@ Two bytes instruction
 `A=B+C`
 How it would be "compiled"
 ```asm
-; load the operands
-LD_ADDR1 $B; load the address of B in the ADDR1
-LD_ADDR2 $C; load the address of C in the ADDR2
-; move the data in in ACC and TEMP
-LD_ACC
-LD_TEMP
-; load the address of A in ADDR1
-LD_ADDR1 $A;
-ADD ;
-ST_ACC1 ; store in memory the value of the ACC register
+LD_ADD_OP; load the address of B
+x"F0"; chosen address
+LD_ADDR2_OP; load the address of C
+x"F1";
+LD_ACC_OP; move B to ACC
+LD_TEMP_OP;  move C to TEMP
+LD_ADDR1_OP; load the address of A
+x"F2";
+ADD_OP; add B and C
+ST_ACC1_OP; store the result in A
 ```
 
 `IF A>=0 THEN B=C`
 ```asm
-LD_ADDR1 $A ; load the address of A in the ADDR1
+LD_ADDR1_OP;  load the address of A (0x00)
+x"F0";  address of A (0x01)
+LD_ADDR2_OP;  load the address of 0 variable (0x02)
+x"F1";  address of 0 variable (0x03)
+LD_JUMPREG_OP;  (0x04)
+x"0E";  address of B = C (0x05)
+LD_ACC_OP;  move A to ACC (0x06)
+LD_TEMP_OP;  move 0 to TEMP (0x07)
+CMP_OP;  compare A and 0 		(0x08)
+JPF_G_OP;  if A > 0 then jump to 	(0x09)
+JPF_Z_OP;  if A == 0 then jump to 	(0x0A)
+; -- else operations
+LD_JUMPREG_OP;  (0x0B)
+x"14";  else jump to 0x14	(0x0C)
+JPF_OP;  jump to 0x14	(0x0D)
+; -- if operations (here we load B and C)
+LD_ADDR1_OP;  load the address of C (0x0E)
+x"F3";  address of C (0x0F)
+LD_ADDR2_OP;  load the address of B (0x10)
+x"F2";  address of B (0x11)
+LD_ACC_OP;  move C to ACC (0x12)
+ST_ACC2_OP;  store C in B (0x13)
 ```
 
 # List of signals
@@ -114,10 +135,7 @@ LD_ADDR1 $A ; load the address of A in the ADDR1
 | ADDR2_INC | Address 2 increment     | CU -> Control bus -> Register2(ADDR2)  |
 | ADDR2_LD  | Address 2 load          | CU -> Control bus -> Register2(ADDR2)  |
 
-# Registers
-![register](images/register.png)<br>
-
-Since the LD_ADDR* instructions are 2 bytes instructions, this is how they should work.
-1. Instruction LD_ADDR is fetched and decoded. ADD_LD signal is sent by the CU
-2. On the *Data bus* the address is loaded in ADDR*
-3. On the EXEC clk iteration the address is sent to ADDR*_BUF. The CU sends a signal of ACC_OE and the address is released in the *Address bus*
+### Execution on the FPGA
+Videos of the execution on the DE1-SoC FPGA board.
+- [Add Program](https://drive.google.com/file/d/1Jgky0CRWGgtvu1gbJoBRLZBz2IVZI-pI/view?usp=sharing)
+- [Branch Program](https://drive.google.com/file/d/12SLZNjsHIX3QHUZwtROI03yDijUwk06g/view?usp=sharing)

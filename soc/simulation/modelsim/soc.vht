@@ -110,7 +110,7 @@ begin
 	);
 	-- Clock generation process
 	en <= '1'; -- enable the clk input
-	prog_select <= '0'; -- select the add program
+	prog_select <= '1'; -- select the add program
 	reset_process : process
 	begin
 		rst <= not rst;
